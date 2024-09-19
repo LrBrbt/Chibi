@@ -5,6 +5,7 @@ import wave
 import json
 import os 
 import datetime
+from sound import Sound
 
 class User:
     name = "Валерия"
@@ -44,10 +45,34 @@ class VoiceAssistant:
             except speech_recognition.UnknownValueError:
                 pass
         return recognized_data
+    
+
+
+
+def execute_command_with_name(command_name: str):
+    for key in commands.keys():
+        if command_name in key:
+            commands[key]()
+        else:
+            pass  # print("Command not found")    
+def play_greetings():        
+    VoiceAssistant.play_voice_assistant_speech("Привет" + User.name)
+
+def make_system_volume_up():          
+    VoiceAssistant.play_voice_assistant_speech("Хорошо! Громкость увеличена")
+    Sound.volume_up()
+
+def make_system_volume_down():       
+    VoiceAssistant.play_voice_assistant_speech("Хорошо! Понижаю громкость")
+    Sound.volume_down()
+
+def call_the_assistent():            
+    VoiceAssistant.play_voice_assistant_speech("Это я!")
+    VoiceAssistant.play_voice_assistant_speech("Сегодня" + str(datetime.date.today))    
 
 if __name__ == "__main__":
 
-    # инициализация инструментов распознавания и ввода речи
+
     recognizer = speech_recognition.Recognizer()
     microphone = speech_recognition.Microphone()
 
@@ -74,7 +99,16 @@ if __name__ == "__main__":
         voice_input = voice_input.split(" ")
         command = voice_input[0]
 
-        if command == "дата":            
-            VoiceAssistant.play_voice_assistant_speech("Сегодня" + str(datetime.date.today))
-        if command == "привет":            
-            VoiceAssistant.play_voice_assistant_speech("Привет" + User.name)
+
+        commands = {
+                        ("здравствуй","привет", "хай", "здарова", "ку"): play_greetings,
+                        ("громче", "увеличь", "погромче"): make_system_volume_up,
+                        ("тише", "понизь", "потише"): make_system_volume_down,
+                        ("чиби"): call_the_assistent
+        }        
+
+
+        #command_options = [str(input_part) for input_part in voice_input[1:len(voice_input)]]
+        execute_command_with_name(command)
+
+     
